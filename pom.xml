@@ -7,15 +7,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.trulfos.bambooplugins</groupId>
     <artifactId>bitbucket-tagger</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <organization>
-        <name>Example Company</name>
-        <url>http://www.example.com/</url>
+        <name>Truls Rustad Fossum</name>
+        <url>https://github.com/trulfos</url>
     </organization>
 
-    <name>bitbucket-tagger</name>
-    <description>This is the com.github.trulfos.bambooplugins:bitbucket-tagger plugin for Atlassian Bamboo.</description>
+    <name>Bitbucket Tagger</name>
+    <description>Provides a tagger task for Bitbucket. Only works when connected using ssh to a Bitbucket Server.</description>
     <packaging>atlassian-plugin</packaging>
 
     <properties>
