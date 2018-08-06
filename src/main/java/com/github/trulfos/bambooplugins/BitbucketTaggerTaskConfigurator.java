@@ -52,6 +52,7 @@ public class BitbucketTaggerTaskConfigurator extends AbstractTaskConfigurator {
         context.put("revision", config.get("revision"));
         context.put("tagName", config.get("tagName"));
         context.put("repos", repoManager.getLinkedRepositories());
+        context.put("repo", config.get("repo"));
     }
 
     @Override
