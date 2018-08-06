@@ -15,5 +15,4 @@
         <configuration class="com.github.trulfos.bambooplugins.BitbucketTaggerTaskConfigurator"/>
         <resource type="freemarker" name="edit" location="edit.ftl"/>
     </taskType>
-
 </atlassian-plugin>
