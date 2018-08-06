@@ -1,5 +1,6 @@
 package com.github.trulfos.bambooplugins;
 
+import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.task.*;
 import com.atlassian.bamboo.vcs.configuration.PlanRepositoryDefinition;
 import com.github.trulfos.bambooplugins.git.RepoUrl;
@@ -15,6 +16,8 @@ public class BitbucketTaggerTask implements CommonTaskType
 
     @Override
     public TaskResult execute(@NotNull CommonTaskContext taskContext) throws TaskException {
+        BuildLogger logger = taskContext.getBuildLogger();
+        boolean didPush = false;
         Ref ref = getRef(taskContext.getConfigurationMap());
 
         for (PlanRepositoryDefinition d : taskContext.getCommonContext().getVcsRepositories()) {
@@ -23,8 +26,16 @@ public class BitbucketTaggerTask implements CommonTaskType
             String privateKey = locationConfig.get("repository.stash.key.private");
             String repoUrl = locationConfig.get("repository.stash.repositoryUrl");
 
-            if (hostKey == null || privateKey == null || repoUrl == null) {
-                continue;
+            if (repoUrl == null) {
+                logger.addBuildLogEntry("Found repository without repo url");
+            }
+
+            if (hostKey == null) {
+                logger.addBuildLogEntry("No host key for repository " + repoUrl);
+            }
+
+            if (privateKey == null) {
+                logger.addBuildLogEntry("No private key for repository " + repoUrl);
             }
 
             RepoUrl url = new RepoUrl(repoUrl);
@@ -34,6 +45,15 @@ public class BitbucketTaggerTask implements CommonTaskType
             } catch (IOException e) {
                 throw new TaskException("IOException when pushing ref", e);
             }
+
+            didPush = true;
+            logger.addBuildLogEntry("Successfully pushed tag to " + repoUrl);
+        }
+
+        if (!didPush) {
+            throw new TaskException(
+                    "There were no repositories available to which a tag could be pushed."
+            );
         }
 
         return TaskResultBuilder.newBuilder(taskContext).success().build();
