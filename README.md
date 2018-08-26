@@ -21,7 +21,7 @@ using Bamboo. A possible set up would be to
 3. run `npm version $bamboo_deploy_version` in the deployment project, and
 4. add a bitbucket tagger task from this plugin configured to push a tag
    to bitbucket, using `refs/tags/${bamboo.deploy.version}` as tag name and
-   `${bamboo.planRepository.0.repositoryUrl}` as ref.
+   `${bamboo.planRepository.0.revision}` as ref.
 
 ## Development
 Start Bamboo by running `atlas-run`. To quickly reload the plugin, run
