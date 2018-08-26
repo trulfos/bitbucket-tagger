@@ -5,12 +5,12 @@ public class Ref {
     private String hash;
 
     public Ref(String name, String hash) {
-        if (!hash.matches("^[0-9a-f]{40}$")) {
-            throw new IllegalArgumentException("Invalid hash given to ref: " + hash);
+        if (hash == null || !hash.matches("^[0-9a-f]{40}$")) {
+            throw new InvalidHashException(hash);
         }
 
-        if (!name.matches("^[^/].*/.*")) { //TODO: Could use some improvement
-            throw new IllegalArgumentException("Invalid refname " + name);
+        if (name == null || !name.matches("^[^/].*/.*")) { //TODO: Could use some improvement
+            throw new InvalidRefNameException(name);
         }
 
         this.name = name;
@@ -23,5 +23,16 @@ public class Ref {
 
     public String getHash() {
         return hash;
+    }
+
+    public boolean equals(Object other) {
+        if (!(other instanceof Ref)) {
+            return false;
+        }
+
+        Ref otherRef = (Ref) other;
+
+        return name.equals(otherRef.name) &&
+                hash.equals(otherRef.hash);
     }
 }

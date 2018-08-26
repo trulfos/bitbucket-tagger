@@ -7,6 +7,7 @@ import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.utils.error.ErrorCollection;
 import com.atlassian.plugin.spring.scanner.annotation.component.Scanned;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
+import com.github.trulfos.bambooplugins.git.Ref;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +27,15 @@ public class BitbucketTaggerTaskConfigurator extends AbstractTaskConfigurator {
     @NotNull
     @Override
     public Map<String, String> generateTaskConfigMap(@NotNull ActionParametersMap params, @Nullable TaskDefinition previousTaskDefinition) {
-        Map<String, String> config = super.generateTaskConfigMap(params, previousTaskDefinition);
+        Config config = new Config(super.generateTaskConfigMap(params, previousTaskDefinition));
 
-        config.put("revision", params.getString("revision"));
-        config.put("tagName", params.getString("tagName"));
-        config.put("repo", params.getString("repo"));
+        config.setRef(
+                params.getString("tagName"),
+                params.getString("revision")
+        );
+        config.setRepo(params.getString("repo"));
 
-        return config;
+        return config.getConfigurationMap();
     }
 
     @Override
@@ -40,19 +43,19 @@ public class BitbucketTaggerTaskConfigurator extends AbstractTaskConfigurator {
         super.populateContextForCreate(context);
 
         context.put("revision", "${bamboo.planRepository.1.revision}");
-        context.put("tagName", "build-${bamboo.buildNumber}");
+        context.put("tagName", "refs/tags/build-${bamboo.buildNumber}");
         context.put("repos", repoManager.getLinkedRepositories());
     }
 
     @Override
     public void populateContextForEdit(@NotNull Map<String, Object> context, @NotNull TaskDefinition taskDefinition) {
         super.populateContextForEdit(context, taskDefinition);
-        Map<String, String> config = taskDefinition.getConfiguration();
+        Config config = new Config(taskDefinition.getConfiguration());
 
-        context.put("revision", config.get("revision"));
-        context.put("tagName", config.get("tagName"));
+        context.put("revision", config.getRefHash());
+        context.put("tagName", config.getRefName());
         context.put("repos", repoManager.getLinkedRepositories());
-        context.put("repo", config.get("repo"));
+        context.put("repo", config.getRepo());
     }
 
     @Override

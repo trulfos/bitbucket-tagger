@@ -25,7 +25,7 @@ public class RepoUrl {
         matcher = pattern.matcher(prefix + url);
 
         if (!matcher.matches()) {
-            throw new IllegalArgumentException("Invalid git repo url");
+            throw new InvalidGitRepoException("Invalid git repo url");
         }
     }
 
@@ -74,5 +74,11 @@ public class RepoUrl {
 
     private boolean isRelativeRepo(String separator, String repo) {
         return "/".equals(separator) && !repo.startsWith("~");
+    }
+
+    public String toString() {
+        return getProtocol() + "://" +
+                getUser() + "@" + getHost() + ":" + getPort() +
+                getRepo();
     }
 }

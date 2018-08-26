@@ -13,6 +13,11 @@ public class SshPushConnection implements Closeable {
     public SshPushConnection(RepoUrl url, String privateKey, String hostKey) {
         this.url = url;
 
+        String protocol = url.getProtocol();
+        if (!"ssh".equals(protocol)) {
+            throw new UnsupportedProtocolException(protocol);
+        }
+
         try {
             createSession(privateKey, hostKey);
         } catch (JSchException e) {
@@ -33,7 +38,7 @@ public class SshPushConnection implements Closeable {
             try {
                 reader.readPktLines();
             } catch (IOException e) {
-                throw new RuntimeException("Could not read initial ref list", e);
+                throw new GitProtcolError("Could not read initial ref list", e);
             }
 
             // Write update
@@ -45,11 +50,13 @@ public class SshPushConnection implements Closeable {
             try {
                 report = new StatusReport(reader.readPktLines());
             } catch (IOException e) {
-                throw new RuntimeException("Failed to read status report", e);
+                throw new GitProtcolError("Failed to read status report", e);
             }
 
             if (!report.isRefUpdated(ref.getName())) {
-                throw new RuntimeException("Update error: Branch not updated: " + report.getRefError(ref.getName()));
+                throw new RefNotUpdatedException(
+                        report.getRefError(ref.getName())
+                );
             }
         }
     }
@@ -69,5 +76,9 @@ public class SshPushConnection implements Closeable {
     @Override
     public void close() {
         session.disconnect();
+    }
+
+    public RepoUrl getUrl() {
+        return url;
     }
 }
