@@ -27,6 +27,9 @@ using Bamboo. A possible set up would be to
 Start Bamboo by running `atlas-run`. To quickly reload the plugin, run
 `atlas-package` from another terminal.
 
+Contributions in the form of pull requests, suggestions or bug reports are very
+welcome.
+
 ## License
 This plugin is released under the MIT license. See the LICENSE file for the
 entire license.
